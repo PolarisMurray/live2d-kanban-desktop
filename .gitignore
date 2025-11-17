@@ -1,3 +1,50 @@
-/desktop.ini
-node_modules
-/dist
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# Build artifacts
+*.swiftmodule
+*.swiftdoc
+
+# App bundles
+*.app
+
+# Temporary files
+*.swp
+*~.nib
+*.tmp
+
+# Logs
+*.log
+
+# User-specific files
+*.user
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+
+# Live2D Models (user-provided)
+Resources/Models/*.moc3
+Resources/Models/*.motion3.json
+Resources/Models/*.exp3.json
+Resources/Models/*.physics3.json
+Resources/Models/*.pose3.json
+Resources/Models/*.png
+Resources/Models/*.json
+!Resources/Models/.gitkeep
