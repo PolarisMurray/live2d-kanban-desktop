@@ -1,6 +1,7 @@
 import SwiftUI
 
 public struct MainView: View {
+    @AppStorage("apiKey") private var apiKey: String = ""
     @EnvironmentObject private var themeManager: ThemeManager
     @EnvironmentObject private var appState: AppState
     @StateObject private var chatViewModel: ChatSessionViewModel
@@ -15,8 +16,9 @@ public struct MainView: View {
     // MARK: - Initialization
     
     public init() {
-        // TODO: Initialize with actual AI provider from app state
-        let provider = OpenAIProvider(apiKey: "") // Placeholder
+        // Initialize with API key from UserDefaults
+        let storedApiKey = UserDefaults.standard.string(forKey: "apiKey") ?? ""
+        let provider = OpenAIProvider(apiKey: storedApiKey)
         _chatViewModel = StateObject(wrappedValue: ChatSessionViewModel(aiProvider: provider))
     }
     
@@ -25,9 +27,26 @@ public struct MainView: View {
     public var body: some View {
         VStack(spacing: 0) {
             // Live2D View (height 200)
-            Live2DView(stateMachine: live2DStateMachine)
-                .frame(height: 200)
-                .background(Color.gray.opacity(0.1))
+            ZStack {
+                Live2DView(stateMachine: live2DStateMachine)
+                    .frame(height: 200)
+                
+                // Placeholder when no model is loaded
+                VStack(spacing: 8) {
+                    Image(systemName: "person.crop.circle.badge.questionmark")
+                        .font(.system(size: 48))
+                        .foregroundColor(.secondary)
+                    Text("Live2D Character")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    Text("Load a model in Settings (⌘,)")
+                        .font(.caption)
+                        .foregroundColor(.secondary.opacity(0.7))
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.gray.opacity(0.05))
+            }
+            .frame(height: 200)
             
             // Action Buttons
             HStack(spacing: 16) {
@@ -35,6 +54,7 @@ public struct MainView: View {
                     // Focus on chat input or show chat
                 }
                 .buttonStyle(.borderedProminent)
+                .help("Start a conversation with AI (requires API key in Settings)")
                 
                 Button("OCR") {
                     showOCR = true

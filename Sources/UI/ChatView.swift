@@ -9,12 +9,43 @@ public struct ChatView: View {
     public var body: some View {
         VStack(spacing: 0) {
             // Messages list
-            List(viewModel.messages) { message in
-                MessageBubble(message: message)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+            if viewModel.messages.isEmpty {
+                VStack(spacing: 16) {
+                    Image(systemName: "bubble.left.and.bubble.right")
+                        .font(.system(size: 48))
+                        .foregroundColor(.secondary.opacity(0.5))
+                    Text("No messages yet")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    Text("Start a conversation by typing a message below")
+                        .font(.caption)
+                        .foregroundColor(.secondary.opacity(0.7))
+                        .multilineTextAlignment(.center)
+                    
+                    if viewModel.error != nil {
+                        VStack(spacing: 8) {
+                            Image(systemName: "exclamationmark.triangle")
+                                .foregroundColor(.orange)
+                            Text("API Error: Please check your API key in Settings (⌘,)")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding()
+                        .background(Color.orange.opacity(0.1))
+                        .cornerRadius(8)
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding()
+            } else {
+                List(viewModel.messages) { message in
+                    MessageBubble(message: message)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+                }
+                .listStyle(.plain)
             }
-            .listStyle(.plain)
             
             if viewModel.isLoading {
                 HStack {

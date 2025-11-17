@@ -71,12 +71,21 @@ public class ChatSessionViewModel: ObservableObject {
         } catch {
             self.error = error
             
-            // Add error message to chat
-            let errorMessage = ChatMessage(
+            // Add helpful error message to chat
+            var errorMessage = "Sorry, I encountered an error: \(error.localizedDescription)"
+            
+            // Provide helpful hints for common errors
+            if error.localizedDescription.contains("401") || error.localizedDescription.contains("Unauthorized") {
+                errorMessage += "\n\n💡 Tip: Please check your API key in Settings (⌘,)"
+            } else if error.localizedDescription.contains("network") || error.localizedDescription.contains("connection") {
+                errorMessage += "\n\n💡 Tip: Please check your internet connection"
+            }
+            
+            let chatErrorMessage = ChatMessage(
                 role: .assistant,
-                content: "Sorry, I encountered an error: \(error.localizedDescription)"
+                content: errorMessage
             )
-            messages.append(errorMessage)
+            messages.append(chatErrorMessage)
         }
     }
 }
