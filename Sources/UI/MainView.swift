@@ -90,6 +90,9 @@ public struct MainView: View {
         .sheet(isPresented: $showPomodoro) {
             PomodoroView()
                 .environmentObject(pomodoroViewModel)
+            #if os(macOS)
+                .frame(minWidth: 500, minHeight: 400)
+            #endif
         }
     }
 }
@@ -128,6 +131,93 @@ struct PomodoroView: View {
     @EnvironmentObject var pomodoroViewModel: PomodoroViewModel
     
     var body: some View {
+        #if os(macOS)
+        VStack(spacing: 30) {
+            // Title
+            Text("Pomodoro Timer")
+                .font(.largeTitle)
+                .bold()
+                .padding(.top)
+            
+            // Timer Display
+            VStack(spacing: 10) {
+                Text(formatTime(pomodoroViewModel.secondsRemaining))
+                    .font(.system(size: 72, weight: .bold, design: .monospaced))
+                    .foregroundColor(pomodoroViewModel.isRunning ? .primary : .secondary)
+                
+                // Progress indicator
+                ProgressView(value: Double(1500 - pomodoroViewModel.secondsRemaining), total: 1500)
+                    .progressViewStyle(.linear)
+                    .frame(width: 300)
+            }
+            .padding()
+            
+            // Control Buttons
+            HStack(spacing: 20) {
+                if pomodoroViewModel.isRunning {
+                    Button(action: {
+                        pomodoroViewModel.pause()
+                    }) {
+                        Label("Pause", systemImage: "pause.fill")
+                            .frame(width: 120)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                } else {
+                    Button(action: {
+                        pomodoroViewModel.start()
+                    }) {
+                        Label("Start", systemImage: "play.fill")
+                            .frame(width: 120)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                }
+                
+                Button(action: {
+                    pomodoroViewModel.reset()
+                }) {
+                    Label("Reset", systemImage: "arrow.clockwise")
+                        .frame(width: 120)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+            }
+            .padding(.bottom, 30)
+            
+            // Status
+            if pomodoroViewModel.isRunning {
+                HStack {
+                    Image(systemName: "circle.fill")
+                        .foregroundColor(.green)
+                        .font(.caption)
+                    Text("Running")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            } else if pomodoroViewModel.secondsRemaining < 1500 {
+                HStack {
+                    Image(systemName: "pause.circle.fill")
+                        .foregroundColor(.orange)
+                        .font(.caption)
+                    Text("Paused")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Spacer()
+            
+            // Close button
+            Button("Close") {
+                dismiss()
+            }
+            .buttonStyle(.bordered)
+            .padding(.bottom)
+        }
+        .frame(width: 500, height: 400)
+        .padding()
+        #else
         NavigationView {
             VStack(spacing: 30) {
                 Text("Pomodoro Timer")
@@ -158,9 +248,7 @@ struct PomodoroView: View {
             }
             .padding()
             .navigationTitle("Pomodoro")
-            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
-            #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") {
@@ -169,6 +257,7 @@ struct PomodoroView: View {
                 }
             }
         }
+        #endif
     }
     
     private func formatTime(_ seconds: Int) -> String {

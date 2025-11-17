@@ -60,6 +60,7 @@ public class PomodoroViewModel: ObservableObject {
         guard secondsRemaining > 0 else {
             // Timer completed
             pause()
+            // TODO: Show completion notification
             return
         }
         
