@@ -88,7 +88,6 @@ public class Live2DStateMachine: ObservableObject {
     public func transition(to newState: CharacterState) {
         guard newState != currentState else { return }
         
-        let previousState = currentState
         currentState = newState
         
         // Update derived properties
@@ -213,9 +212,10 @@ public class Live2DStateMachine: ObservableObject {
     
     private func scheduleStateTransition(to state: CharacterState, after delay: TimeInterval) {
         stateTimer?.invalidate()
+        let targetState = state
         stateTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
             Task { @MainActor in
-                self?.transition(to: state)
+                self?.transition(to: targetState)
             }
         }
     }

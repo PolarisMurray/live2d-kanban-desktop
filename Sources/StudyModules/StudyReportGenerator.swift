@@ -11,6 +11,10 @@ import AppKit
 
 /// Generates PDF study reports
 public class StudyReportGenerator {
+    // MARK: - Properties
+    
+    private let pageSize = CGSize(width: 612, height: 792) // US Letter size
+    
     // MARK: - Public Methods
     
     /// Generates a weekly study report as a PDF document
@@ -190,7 +194,7 @@ public class StudyReportGenerator {
         let consumer = CGDataConsumer(data: mutableData as CFMutableData)!
         var mediaBox = pageRect
         let pdfContext = CGContext(consumer: consumer, mediaBox: &mediaBox, nil)!
-        pdfContext.beginPDFPage(nil)
+        pdfContext.beginPDFPage(nil as CFDictionary?)
         pdfContext.setFillColor(NSColor.white.cgColor)
         pdfContext.fill(mediaBox)
         #endif

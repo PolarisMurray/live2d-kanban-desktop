@@ -27,7 +27,7 @@ public struct FloatingWindow: View {
             .frame(width: 120)
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(Color(NSColor.windowBackgroundColor))
         .cornerRadius(12)
         .shadow(radius: 10)
         .position(position)
