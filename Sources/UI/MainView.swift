@@ -1,0 +1,187 @@
+import SwiftUI
+
+public struct MainView: View {
+    @EnvironmentObject private var themeManager: ThemeManager
+    @EnvironmentObject private var appState: AppState
+    @StateObject private var chatViewModel: ChatSessionViewModel
+    @StateObject private var pomodoroViewModel = PomodoroViewModel()
+    @StateObject private var live2DStateMachine = Live2DStateMachine()
+    
+    @State private var showFloatingWindow = false
+    @State private var showOCR = false
+    @State private var showFlashcards = false
+    @State private var showPomodoro = false
+    
+    // MARK: - Initialization
+    
+    public init() {
+        // TODO: Initialize with actual AI provider from app state
+        let provider = OpenAIProvider(apiKey: "") // Placeholder
+        _chatViewModel = StateObject(wrappedValue: ChatSessionViewModel(aiProvider: provider))
+    }
+    
+    // MARK: - Body
+    
+    public var body: some View {
+        VStack(spacing: 0) {
+            // Live2D View (height 200)
+            Live2DView(stateMachine: live2DStateMachine)
+                .frame(height: 200)
+                .background(Color.gray.opacity(0.1))
+            
+            // Action Buttons
+            HStack(spacing: 16) {
+                Button("Ask AI") {
+                    // Focus on chat input or show chat
+                }
+                .buttonStyle(.borderedProminent)
+                
+                Button("OCR") {
+                    showOCR = true
+                }
+                .buttonStyle(.bordered)
+                
+                Button("Flashcards") {
+                    showFlashcards = true
+                }
+                .buttonStyle(.bordered)
+                
+                Button("Pomodoro") {
+                    showPomodoro = true
+                }
+                .buttonStyle(.bordered)
+            }
+            .padding()
+            
+            // Chat View
+            ChatView()
+                .environmentObject(chatViewModel)
+        }
+        .sheet(isPresented: $showFloatingWindow) {
+            FloatingWindow()
+                .environmentObject(appState)
+        }
+        .sheet(isPresented: $showOCR) {
+            OCRView()
+        }
+        .sheet(isPresented: $showFlashcards) {
+            FlashcardView()
+        }
+        .sheet(isPresented: $showPomodoro) {
+            PomodoroView()
+                .environmentObject(pomodoroViewModel)
+        }
+    }
+}
+
+// MARK: - Supporting Views
+
+struct OCRView: View {
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                Text("OCR View")
+                    .font(.title)
+                    .padding()
+                Text("Image text extraction will be implemented here")
+                    .foregroundColor(.secondary)
+            }
+            .navigationTitle("OCR")
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            #endif
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct PomodoroView: View {
+    @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var pomodoroViewModel: PomodoroViewModel
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 30) {
+                Text("Pomodoro Timer")
+                    .font(.largeTitle)
+                    .bold()
+                
+                Text(formatTime(pomodoroViewModel.secondsRemaining))
+                    .font(.system(size: 72, weight: .bold, design: .monospaced))
+                
+                HStack(spacing: 20) {
+                    if pomodoroViewModel.isRunning {
+                        Button("Pause") {
+                            pomodoroViewModel.pause()
+                        }
+                        .buttonStyle(.borderedProminent)
+                    } else {
+                        Button("Start") {
+                            pomodoroViewModel.start()
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                    
+                    Button("Reset") {
+                        pomodoroViewModel.reset()
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
+            .padding()
+            .navigationTitle("Pomodoro")
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            #endif
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func formatTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let secs = seconds % 60
+        return String(format: "%02d:%02d", minutes, secs)
+    }
+}
+
+struct FlashcardView: View {
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                Text("Flashcard View")
+                    .font(.title)
+                    .padding()
+                Text("Flashcard review interface will be implemented here")
+                    .foregroundColor(.secondary)
+            }
+            .navigationTitle("Flashcards")
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            #endif
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
