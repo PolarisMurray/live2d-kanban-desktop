@@ -48,7 +48,9 @@
 
 ## 🚀 Quick Start for macOS / 快速开始
 
-**中文用户**: 查看 [运行指南.md](./运行指南.md) 获取详细的中文运行说明
+**中文用户**: 
+- 查看 [README_CN.md](./README_CN.md) 获取完整中文版 README
+- 查看 [运行指南.md](./运行指南.md) 获取详细的中文运行说明
 
 ### Prerequisites / 前置要求
 
